@@ -1,0 +1,8 @@
+# Ignorar node_modules globalmente
+**/node_modules/
+
+# Ignorar otros archivos comunes de Node/Angular si deseas
+.env
+dist/
+.DS_Store
+npm-debug.log*
