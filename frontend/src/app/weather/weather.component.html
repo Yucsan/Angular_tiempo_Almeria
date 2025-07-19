@@ -1,0 +1,71 @@
+<div class="weather-container">
+  <div class="weather-card">
+    <h2>🌤️ Clima Actual</h2>
+    
+    <!-- Formulario de búsqueda -->
+    <div class="search-form">
+      <input 
+        type="text" 
+        [(ngModel)]="city" 
+        placeholder="Ingresa una ciudad..." 
+        class="search-input"
+        (keyup.enter)="searchWeather()"
+      />
+      <button 
+        (click)="searchWeather()" 
+        class="search-btn"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Buscando...' : 'Buscar' }}
+      </button>
+      <button 
+        (click)="getCurrentLocation()" 
+        class="location-btn"
+        [disabled]="loading"
+      >
+        📍 Mi Ubicación
+      </button>
+    </div>
+
+    <!-- Mostrar errores -->
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <!-- Mostrar loading -->
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Cargando información del clima...</p>
+    </div>
+
+    <!-- Mostrar datos del clima -->
+    <div *ngIf="weatherData && !loading" class="weather-info">
+      <div class="weather-header">
+        <h3>{{ weatherData.location }}</h3>
+        <img [src]="weatherData.icon" [alt]="weatherData.description" class="weather-icon">
+      </div>
+      
+      <div class="weather-details">
+        <div class="temp-main">
+          <span class="temperature">{{ weatherData.temperature }}°C</span>
+          <span class="description">{{ weatherData.description }}</span>
+        </div>
+        
+        <div class="weather-stats">
+          <div class="stat">
+            <span class="stat-label">💧 Humedad</span>
+            <span class="stat-value">{{ weatherData.humidity }}%</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">🌪️ Viento</span>
+            <span class="stat-value">{{ weatherData.windSpeed }} km/h</span>
+          </div>
+        </div>
+      </div>
+
+      <button (click)="clearSearch()" class="clear-btn">
+        Limpiar
+      </button>
+    </div>
+  </div>
+</div>
