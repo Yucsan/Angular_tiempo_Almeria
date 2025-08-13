@@ -1,25 +1,25 @@
 <div class="weather-container">
   <div class="weather-card">
     <h2>🌤️ Clima Actual</h2>
-    
+   
     <!-- Formulario de búsqueda -->
     <div class="search-form">
-      <input 
-        type="text" 
-        [(ngModel)]="city" 
-        placeholder="Ingresa una ciudad..." 
+      <input
+        type="text"
+        [(ngModel)]="city"
+        placeholder="Ingresa una ciudad..."
         class="search-input"
         (keyup.enter)="searchWeather()"
       />
-      <button 
-        (click)="searchWeather()" 
+      <button
+        (click)="searchWeather()"
         class="search-btn"
         [disabled]="loading"
       >
         {{ loading ? 'Buscando...' : 'Buscar' }}
       </button>
-      <button 
-        (click)="getCurrentLocation()" 
+      <button
+        (click)="getCurrentLocation()"
         class="location-btn"
         [disabled]="loading"
       >
@@ -38,19 +38,21 @@
       <p>Cargando información del clima...</p>
     </div>
 
-    <!-- Mostrar datos del clima -->
+    <!-- Mostrar datos del clima ACTUALIZADO -->
     <div *ngIf="weatherData && !loading" class="weather-info">
       <div class="weather-header">
         <h3>{{ weatherData.location }}</h3>
         <img [src]="weatherData.icon" [alt]="weatherData.description" class="weather-icon">
       </div>
-      
+     
       <div class="weather-details">
         <div class="temp-main">
           <span class="temperature">{{ weatherData.temperature }}°C</span>
+          <span class="feels-like">Sensación {{ weatherData.feelsLike }}°C</span>
           <span class="description">{{ weatherData.description }}</span>
         </div>
-        
+       
+        <!-- Stats básicos (siempre visibles) -->
         <div class="weather-stats">
           <div class="stat">
             <span class="stat-label">💧 Humedad</span>
@@ -58,13 +60,137 @@
           </div>
           <div class="stat">
             <span class="stat-label">🌪️ Viento</span>
-            <span class="stat-value">{{ weatherData.windSpeed }} km/h</span>
+            <span class="stat-value">{{ getWindDescription() }}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">🌡️ Presión</span>
+            <span class="stat-value">{{ getPressureText() }}</span>
+          </div>
+          <div class="stat" *ngIf="weatherData.visibility">
+            <span class="stat-label">👁️ Visibilidad</span>
+            <span class="stat-value">{{ getVisibilityText() }}</span>
           </div>
         </div>
       </div>
 
+      <!-- NUEVA SECCIÓN: Botones de control -->
+      <div class="control-buttons">
+        <button 
+          (click)="toggleDetailedView()" 
+          class="toggle-btn"
+          [class.active]="showDetailedView"
+        >
+          {{ showDetailedView ? '📊 Ocultar Detalles' : '📊 Ver Detalles' }}
+        </button>
+        <button 
+          (click)="toggleForecast()" 
+          class="toggle-btn"
+          [class.active]="showForecast"
+          [disabled]="loadingForecast"
+        >
+          {{ loadingForecast ? 'Cargando...' : (showForecast ? '📅 Ocultar Pronóstico' : '📅 Ver Pronóstico 5 Días') }}
+        </button>
+      </div>
+
+      <!-- NUEVA SECCIÓN: Vista detallada expandible -->
+      <div *ngIf="showDetailedView" class="detailed-view">
+        <h4>🔍 Información Detallada</h4>
+        <div class="detailed-grid">
+          <div class="detail-card">
+            <h5>🌡️ Temperatura</h5>
+            <p><strong>Actual:</strong> {{ weatherData.temperature }}°C</p>
+            <p><strong>Sensación:</strong> {{ weatherData.feelsLike }}°C</p>
+          </div>
+          
+          <div class="detail-card">
+            <h5>🌪️ Viento</h5>
+            <p><strong>Velocidad:</strong> {{ weatherData.windSpeed }} km/h</p>
+            <p><strong>Dirección:</strong> {{ weatherData.windDirection }} ({{ weatherData.windDegrees }}°)</p>
+            <p *ngIf="weatherData.windGust"><strong>Ráfagas:</strong> {{ weatherData.windGust }} km/h</p>
+          </div>
+          
+          <div class="detail-card">
+            <h5>🌫️ Atmosférico</h5>
+            <p><strong>Humedad:</strong> {{ weatherData.humidity }}%</p>
+            <p><strong>Presión:</strong> {{ weatherData.pressure }} hPa</p>
+            <p *ngIf="weatherData.visibility"><strong>Visibilidad:</strong> {{ weatherData.visibility }} km</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NUEVA SECCIÓN: Pronóstico de 5 días -->
+      <div *ngIf="showForecast" class="forecast-section">
+        <h4>📅 Pronóstico de 5 Días</h4>
+        
+        <!-- Loading del pronóstico -->
+        <div *ngIf="loadingForecast" class="forecast-loading">
+          <div class="spinner-small"></div>
+          <p>Cargando pronóstico...</p>
+        </div>
+
+        <!-- Datos del pronóstico -->
+        <div *ngIf="forecastData && !loadingForecast" class="forecast-content">
+          
+          <!-- Navegación por días -->
+          <div class="day-tabs">
+            <button 
+              *ngFor="let day of forecastData.dailySummary; let i = index"
+              (click)="selectDay(i)"
+              class="day-tab"
+              [class.active]="selectedDay === i"
+            >
+              <span class="day-name">{{ formatDate(day.date) }}</span>
+              <span class="day-temps">{{ day.tempMin }}° / {{ day.tempMax }}°</span>
+            </button>
+          </div>
+
+          <!-- Detalles del día seleccionado -->
+          <div *ngIf="getSelectedDayForecast()" class="selected-day-details">
+            <div class="day-summary">
+              <h5>{{ formatDate(getSelectedDayForecast()!.date) }}</h5>
+              <div class="day-main-stats">
+                <div class="temp-range">
+                  <span class="temp-min">Mín: {{ getSelectedDayForecast()!.tempMin }}°C</span>
+                  <span class="temp-max">Máx: {{ getSelectedDayForecast()!.tempMax }}°C</span>
+                </div>
+                <div class="day-conditions">
+                  <p><strong>Condiciones:</strong> {{ getSelectedDayForecast()!.dominantDescription }}</p>
+                  <p><strong>Humedad promedio:</strong> {{ getSelectedDayForecast()!.avgHumidity }}%</p>
+                  <p><strong>Viento máximo:</strong> {{ getSelectedDayForecast()!.maxWindSpeed }} km/h</p>
+                  <p *ngIf="getSelectedDayForecast()!.maxWindGust">
+                    <strong>Ráfagas máximas:</strong> {{ getSelectedDayForecast()!.maxWindGust }} km/h
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pronóstico por horas del día seleccionado -->
+            <div class="hourly-forecast">
+              <h6>📊 Pronóstico por Horas</h6>
+              <div class="hourly-scroll">
+                <div 
+                  *ngFor="let hour of getSelectedDayForecast()!.hourlyData" 
+                  class="hour-item"
+                >
+                  <div class="hour-time">{{ hour.dateTime.split(' ')[1].substring(0,5) }}</div>
+                  <img [src]="hour.icon" [alt]="hour.description" class="hour-icon">
+                  <div class="hour-temp">{{ hour.temperature }}°</div>
+                  <div class="hour-desc">{{ hour.description }}</div>
+                  <div class="hour-details">
+                    <small>💧 {{ hour.humidity }}%</small>
+                    <small>🌪️ {{ hour.windSpeed }} km/h {{ hour.windDirection }}</small>
+                    <small *ngIf="hour.precipitation > 0">🌧️ {{ hour.precipitation }}mm</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón limpiar (movido al final) -->
       <button (click)="clearSearch()" class="clear-btn">
-        Limpiar
+        🗑️ Limpiar Búsqueda
       </button>
     </div>
   </div>
