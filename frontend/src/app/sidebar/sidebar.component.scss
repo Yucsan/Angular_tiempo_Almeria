@@ -1,18 +1,23 @@
 .sidebar {
   position: fixed;
-  top: 64px; // CAMBIO CLAVE: Empezar debajo del header
+  top: 64px;
   left: 0;
   width: 280px;
-  height: calc(100vh - 64px); // CAMBIO CLAVE: Altura menos la del header
+  height: calc(100vh - 64px);
   background-color: #ffffff;
   border-right: 1px solid #e0e0e0;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-in-out;
-  z-index: 998; // Menor que el header
+  transform: translateX(0); // Inicializar como visible en desktop por defecto
+  transition: none; // Sin transición inicial para evitar FOUC
+  z-index: 998;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  overflow-x: hidden; // AÑADIDO: Eliminar scroll horizontal
-  overflow-y: auto; // AÑADIDO: Permitir scroll vertical si es necesario
-  box-sizing: border-box; // AÑADIDO: Para incluir padding/border en el width
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  
+  // Activar transiciones después del primer render
+  &.transitions-enabled {
+    transition: transform 0.3s ease-in-out;
+  }
 
   &.open {
     transform: translateX(0);
@@ -22,18 +27,19 @@
   @media (min-width: 769px) {
     transform: translateX(0); // Siempre visible en desktop
     position: fixed;
-    z-index: 998; // Menor que header para que header esté encima
+    z-index: 998;
   }
 
   // Mobile: overlay behavior
   &.mobile {
+    transform: translateX(-100%); // Oculto por defecto en mobile
     position: fixed;
-    z-index: 1001; // Mayor que header en mobile para overlay
-    top: 0; // En mobile sí puede ir desde arriba
-    height: 100vh; // En mobile altura completa
+    z-index: 1001;
+    top: 0;
+    height: 100vh;
     
-    &:not(.open) {
-      transform: translateX(-100%);
+    &.open {
+      transform: translateX(0);
     }
   }
 }

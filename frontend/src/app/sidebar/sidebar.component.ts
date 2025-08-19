@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,7 +12,7 @@ import { MatListModule } from '@angular/material/list';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent {
+export class SidebarComponent implements AfterViewInit {
   @Input() isOpen = false;
   @Input() isMobile = false;
   @Output() closeSidebar = new EventEmitter<void>();
@@ -22,6 +22,18 @@ export class SidebarComponent {
     { icon: 'cloud', label: 'Clima', route: '/weather' },
     { icon: 'info', label: 'Acerca de', route: '/about' }
   ];
+
+  constructor(private elementRef: ElementRef) {}
+
+  ngAfterViewInit() {
+    // Habilitar transiciones después del primer render para evitar FOUC
+    setTimeout(() => {
+      const sidebarElement = this.elementRef.nativeElement.querySelector('.sidebar');
+      if (sidebarElement) {
+        sidebarElement.classList.add('transitions-enabled');
+      }
+    }, 0);
+  }
 
   onCloseSidebar() {
     this.closeSidebar.emit();
