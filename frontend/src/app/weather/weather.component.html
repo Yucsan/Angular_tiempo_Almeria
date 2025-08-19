@@ -2,55 +2,53 @@
   <h2>🌤️ Clima Actual</h2>
    
     <!-- Formulario de búsqueda -->
-    <div class="search-form">
-      <input
-        type="text"
-        [(ngModel)]="city"
-        placeholder="Ingresa una ciudad..."
-        class="search-input"
-        (keyup.enter)="searchWeather()"
-      />
-      <button
-        (click)="searchWeather()"
-        class="search-btn"
-        [disabled]="loading"
-      >
-        {{ loading ? 'Buscando...' : 'Buscar' }}
-      </button>
-      <button
-        (click)="getCurrentLocation()"
-        class="location-btn"
-        [disabled]="loading"
-      >
-        📍 Mi Ubicación
-      </button>
+    
+    <div class="contenedor">
+      <div class="search-form">
+        <input type="text" [(ngModel)]="city" placeholder="Ingresa una ciudad..." class="search-input"
+          (keyup.enter)="searchWeather()" />
+        <button (click)="searchWeather()" class="search-btn" [disabled]="loading">
+          {{ loading ? 'Buscando...' : 'Buscar' }}
+        </button>
+        <button (click)="getCurrentLocation()" class="location-btn" [disabled]="loading">
+          📍 Mi Ubicación
+        </button>
+      </div>
+    
+      <!-- Mostrar errores -->
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+    
+      <!-- ESTO se vea de tamalo completo en moviles -->
+      <!-- Mostrar loading -->
+      <div *ngIf="loading" class="loading">
+        <div class="spinner"></div>
+        <p>{{ getLoadingMessage() }}</p>
+      </div>
+    
+      <div *ngIf="weatherData && !loading" class="solo_weather_card">
+        <div class="weather-header2">
+          <h3>{{ weatherData.location }}</h3>
+          <img [src]="weatherData.icon" [alt]="weatherData.description" class="weather-icon">
+        </div>
+    
+        <div class="weather-details">
+          <div class="temp-main">
+            <span class="temperature">{{ weatherData.temperature }}°C</span>
+            <span class="feels-like">Sensación {{ weatherData.feelsLike }}°C</span>
+            <span class="description">{{ weatherData.description }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Mostrar errores -->
-    <div *ngIf="error" class="error-message">
-      {{ error }}
-    </div>
-
-    <!-- Mostrar loading -->
-    <div *ngIf="loading" class="loading">
-      <div class="spinner"></div>
-      <p>{{ getLoadingMessage() }}</p>
-    </div>
 
     <!-- Mostrar datos del clima ACTUALIZADO -->
     <div *ngIf="weatherData && !loading" class="weather-info">
-      <div class="weather-header">
-        <h3>{{ weatherData.location }}</h3>
-        <img [src]="weatherData.icon" [alt]="weatherData.description" class="weather-icon">
-      </div>
-     
+
       <div class="weather-details">
-        <div class="temp-main">
-          <span class="temperature">{{ weatherData.temperature }}°C</span>
-          <span class="feels-like">Sensación {{ weatherData.feelsLike }}°C</span>
-          <span class="description">{{ weatherData.description }}</span>
-        </div>
-       
+
         <!-- Stats básicos (siempre visibles) -->
         <div class="weather-stats">
           <div class="stat">
@@ -216,6 +214,7 @@
           </div>
         </div>
       </div>
+    </div>
 
   <!-- Botón limpiar (movido al final) -->
   <button (click)="clearSearch()" class="clear-btn">
