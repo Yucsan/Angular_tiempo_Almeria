@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Key de WeatherAPI.com
-const API_KEY = process.env.WEATHERAPI_KEY || 'ce43e96155294a8780f155344251308';
+const API_KEY = process.env.WEATHERAPI_KEY;
 const BASE_URL = 'https://api.weatherapi.com/v1';
 
 // Función para convertir grados de viento a dirección textual
