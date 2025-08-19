@@ -6,7 +6,7 @@ import {
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader,
   normalizePassiveListenerOptions
-} from "./chunk-P75LR2PB.js";
+} from "./chunk-CMCJPO3L.js";
 import {
   MediaMatcher,
   Platform
@@ -35,11 +35,6 @@ import {
   __spreadValues
 } from "./chunk-WDMUDEB6.js";
 
-// node_modules/@angular/cdk/fesm2022/coercion.mjs
-function coerceBooleanProperty(value) {
-  return value != null && `${value}` !== "false";
-}
-
 // node_modules/@angular/material/fesm2022/animation-DfMFjxHu.mjs
 var MATERIAL_ANIMATIONS = new InjectionToken("MATERIAL_ANIMATIONS");
 function _animationsDisabled() {
@@ -48,6 +43,11 @@ function _animationsDisabled() {
   }
   const mediaMatcher = inject(MediaMatcher);
   return mediaMatcher.matchMedia("(prefers-reduced-motion)").matches;
+}
+
+// node_modules/@angular/cdk/fesm2022/coercion.mjs
+function coerceBooleanProperty(value) {
+  return value != null && `${value}` !== "false";
 }
 
 // node_modules/@angular/material/fesm2022/ripple-BYgV4oZC.mjs
@@ -679,12 +679,12 @@ var MatRippleModule = class _MatRippleModule {
 })();
 
 export {
-  coerceBooleanProperty,
   _animationsDisabled,
+  coerceBooleanProperty,
   defaultRippleAnimationConfig,
   RippleRenderer,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   _StructuralStylesLoader,
   MatRippleModule
 };
-//# sourceMappingURL=chunk-M7XZANOC.js.map
+//# sourceMappingURL=chunk-NO4WONRX.js.map

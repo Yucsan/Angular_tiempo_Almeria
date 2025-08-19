@@ -1,10 +1,10 @@
 import {
+  BidiModule
+} from "./chunk-KQ4YVO7E.js";
+import {
   BreakpointObserver,
   Platform
 } from "./chunk-D75BYA5G.js";
-import {
-  BidiModule
-} from "./chunk-KQ4YVO7E.js";
 import {
   APP_ID,
   ApplicationRef,
@@ -58,19 +58,27 @@ import {
   __spreadValues
 } from "./chunk-WDMUDEB6.js";
 
-// node_modules/@angular/cdk/fesm2022/element-x4z00URv.mjs
-function coerceNumberProperty(value, fallbackValue = 0) {
-  if (_isNumberValue(value)) {
-    return Number(value);
-  }
-  return arguments.length === 2 ? fallbackValue : 0;
-}
-function _isNumberValue(value) {
-  return !isNaN(parseFloat(value)) && !isNaN(Number(value));
-}
-function coerceElement(elementOrRef) {
-  return elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
-}
+// node_modules/@angular/cdk/fesm2022/keycodes-CpHkExLC.mjs
+var TAB = 9;
+var ENTER = 13;
+var SHIFT = 16;
+var CONTROL = 17;
+var ALT = 18;
+var SPACE = 32;
+var PAGE_UP = 33;
+var PAGE_DOWN = 34;
+var END = 35;
+var HOME = 36;
+var LEFT_ARROW = 37;
+var UP_ARROW = 38;
+var RIGHT_ARROW = 39;
+var DOWN_ARROW = 40;
+var ZERO = 48;
+var NINE = 57;
+var A = 65;
+var Z = 90;
+var META = 91;
+var MAC_META = 224;
 
 // node_modules/@angular/cdk/fesm2022/shadow-dom-B0oHn41l.mjs
 var shadowDomIsSupported;
@@ -104,6 +112,20 @@ function _getFocusedElementPierceShadowDom() {
 }
 function _getEventTarget(event) {
   return event.composedPath ? event.composedPath()[0] : event.target;
+}
+
+// node_modules/@angular/cdk/fesm2022/element-x4z00URv.mjs
+function coerceNumberProperty(value, fallbackValue = 0) {
+  if (_isNumberValue(value)) {
+    return Number(value);
+  }
+  return arguments.length === 2 ? fallbackValue : 0;
+}
+function _isNumberValue(value) {
+  return !isNaN(parseFloat(value)) && !isNaN(Number(value));
+}
+function coerceElement(elementOrRef) {
+  return elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
 }
 
 // node_modules/@angular/cdk/fesm2022/style-loader-B2sGQXxD.mjs
@@ -185,28 +207,6 @@ var _VisuallyHiddenLoader = class __VisuallyHiddenLoader {
     }]
   }], null, null);
 })();
-
-// node_modules/@angular/cdk/fesm2022/keycodes-CpHkExLC.mjs
-var TAB = 9;
-var ENTER = 13;
-var SHIFT = 16;
-var CONTROL = 17;
-var ALT = 18;
-var SPACE = 32;
-var PAGE_UP = 33;
-var PAGE_DOWN = 34;
-var END = 35;
-var HOME = 36;
-var LEFT_ARROW = 37;
-var UP_ARROW = 38;
-var RIGHT_ARROW = 39;
-var DOWN_ARROW = 40;
-var ZERO = 48;
-var NINE = 57;
-var A = 65;
-var Z = 90;
-var META = 91;
-var MAC_META = 224;
 
 // node_modules/@angular/cdk/fesm2022/observers.mjs
 function shouldIgnoreRecord(record) {
@@ -2980,22 +2980,22 @@ var MatCommonModule = class _MatCommonModule {
 })();
 
 export {
-  coerceNumberProperty,
-  coerceElement,
-  normalizePassiveListenerOptions,
-  _getFocusedElementPierceShadowDom,
-  _getEventTarget,
-  _CdkPrivateStyleLoader,
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader,
   ENTER,
   SPACE,
   A,
+  _getFocusedElementPierceShadowDom,
+  _getEventTarget,
+  normalizePassiveListenerOptions,
+  coerceNumberProperty,
+  coerceElement,
   FocusMonitor,
+  _CdkPrivateStyleLoader,
   CdkObserveContent,
   ObserversModule,
   hasModifierKey,
   FocusKeyManager,
   MatCommonModule
 };
-//# sourceMappingURL=chunk-P75LR2PB.js.map
+//# sourceMappingURL=chunk-CMCJPO3L.js.map

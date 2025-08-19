@@ -4,6 +4,7 @@
     <!-- Formulario de búsqueda -->
     
     <div class="contenedor">
+      
       <div class="search-form">
         <input type="text" [(ngModel)]="city" placeholder="Ingresa una ciudad..." class="search-input"
           (keyup.enter)="searchWeather()" />
@@ -214,10 +215,10 @@
           </div>
         </div>
       </div>
+      <!-- Botón limpiar (movido al final) -->
+      <button (click)="clearSearch()" class="clear-btn">
+        🗑️ Limpiar Búsqueda
+      </button>
     </div>
 
-  <!-- Botón limpiar (movido al final) -->
-  <button (click)="clearSearch()" class="clear-btn">
-    🗑️ Limpiar Búsqueda
-  </button>
 </div>
