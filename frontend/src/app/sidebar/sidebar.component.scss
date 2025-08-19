@@ -1,15 +1,18 @@
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 64px; // CAMBIO CLAVE: Empezar debajo del header
   left: 0;
   width: 280px;
-  height: 100vh;
+  height: calc(100vh - 64px); // CAMBIO CLAVE: Altura menos la del header
   background-color: #ffffff;
   border-right: 1px solid #e0e0e0;
   transform: translateX(-100%);
   transition: transform 0.3s ease-in-out;
-  z-index: 999;
+  z-index: 998; // Menor que el header
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden; // AÑADIDO: Eliminar scroll horizontal
+  overflow-y: auto; // AÑADIDO: Permitir scroll vertical si es necesario
+  box-sizing: border-box; // AÑADIDO: Para incluir padding/border en el width
 
   &.open {
     transform: translateX(0);
@@ -17,22 +20,17 @@
 
   // Desktop: always open and push content
   @media (min-width: 769px) {
-    position: fixed; // Mantener fixed para que siempre esté visible
     transform: translateX(0); // Siempre visible en desktop
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    border-right: 1px solid #e0e0e0;
-    z-index: 998; // Menor que mobile para que el header esté encima
-    
-    // Si quieres que solo aparezca cuando esté abierto en desktop, descomenta:
-    // &:not(.open) {
-    //   transform: translateX(-100%);
-    // }
+    position: fixed;
+    z-index: 998; // Menor que header para que header esté encima
   }
 
   // Mobile: overlay behavior
   &.mobile {
     position: fixed;
-    z-index: 1001;
+    z-index: 1001; // Mayor que header en mobile para overlay
+    top: 0; // En mobile sí puede ir desde arriba
+    height: 100vh; // En mobile altura completa
     
     &:not(.open) {
       transform: translateX(-100%);
@@ -49,7 +47,7 @@
   background-color: #f8f9fa;
   min-height: 64px;
   box-sizing: border-box;
-  margin-top: 3rem;
+  // ELIMINAR: margin-top: 3rem; - Ya no es necesario
 }
 
 .branding {
@@ -58,16 +56,22 @@
   text-decoration: none;
   background-color: turquoise;
   height: 150px;
+  width: 100%; // AÑADIDO: Asegurar que no exceda el ancho
+  max-width: 100%; // AÑADIDO: Prevenir overflow
+  box-sizing: border-box; // AÑADIDO: Incluir padding en el ancho
+  overflow: hidden; // AÑADIDO: Ocultar cualquier contenido que se desborde
 
   a {
     display: flex;
     align-items: center;
     text-decoration: none;
     color: inherit;
+    width: 100%; // AÑADIDO: Asegurar que el enlace use todo el ancho disponible
   }
 
   .logo {
     width: 100%;
+    max-width: 100%; // AÑADIDO: Prevenir que la imagen sea más ancha que el contenedor
     object-fit: cover;
     border-radius: 4px;
     margin-right: 12px;
@@ -77,6 +81,9 @@
     font-size: 1.1rem;
     font-weight: 500;
     color: #333;
+    white-space: nowrap; // AÑADIDO: Evitar que el texto se rompa
+    overflow: hidden; // AÑADIDO: Ocultar texto que se desborde
+    text-overflow: ellipsis; // AÑADIDO: Mostrar ... si el texto es muy largo
   }
 }
 
@@ -88,9 +95,13 @@
   padding: 1rem 0;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden; // AÑADIDO: Eliminar scroll horizontal
+  width: 100%; // AÑADIDO: Asegurar que use todo el ancho disponible
+  box-sizing: border-box; // AÑADIDO: Incluir padding en el ancho
 
   mat-nav-list {
     padding: 0;
+    width: 100%; // AÑADIDO: Asegurar que la lista use todo el ancho
   }
 
   a[mat-list-item] {
@@ -98,6 +109,9 @@
     transition: all 0.2s ease;
     margin: 4px 12px;
     border-radius: 8px;
+    width: calc(100% - 24px); // AÑADIDO: Ancho menos los márgenes
+    max-width: calc(100% - 24px); // AÑADIDO: Prevenir overflow
+    box-sizing: border-box; // AÑADIDO: Incluir padding/border en el ancho
 
     &:hover {
       background-color: #f5f5f5;
