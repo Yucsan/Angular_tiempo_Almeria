@@ -1,6 +1,5 @@
 <div class="weather-container">
-  <div class="weather-card">
-    <h2>🌤️ Clima Actual</h2>
+  <h2>🌤️ Clima Actual</h2>
    
     <!-- Formulario de búsqueda -->
     <div class="search-form">
@@ -164,34 +163,62 @@
               </div>
             </div>
 
-            <!-- Pronóstico por horas del día seleccionado -->
+            <!-- Pronóstico por horas del día seleccionado (24 HORAS) -->
             <div class="hourly-forecast">
-              <h6>📊 Pronóstico por Horas</h6>
+              <h6>🕐 Pronóstico por Horas (24h completas)</h6>
+              
+              <!-- Estadísticas rápidas del día -->
+              <div *ngIf="getDayStats()" class="day-quick-stats">
+                <div class="quick-stat">
+                  <span class="stat-icon">🌡️</span>
+                  <span class="stat-text">{{ getDayStats()!.tempMin }}° - {{ getDayStats()!.tempMax }}°</span>
+                </div>
+                <div class="quick-stat">
+                  <span class="stat-icon">🌪️</span>
+                  <span class="stat-text">Máx: {{ getDayStats()!.maxWind }} km/h</span>
+                </div>
+                <div class="quick-stat">
+                  <span class="stat-icon">💧</span>
+                  <span class="stat-text">Prom: {{ getDayStats()!.avgHumidity }}%</span>
+                </div>
+              </div>
+              
               <div class="hourly-scroll">
                 <div 
-                  *ngFor="let hour of getSelectedDayForecast()!.hourlyData" 
+                  *ngFor="let hour of getFilteredHours()" 
                   class="hour-item"
                 >
-                  <div class="hour-time">{{ hour.dateTime.split(' ')[1].substring(0,5) }}</div>
+                  <div class="hour-time">{{ formatHour(hour.dateTime) }}</div>
                   <img [src]="hour.icon" [alt]="hour.description" class="hour-icon">
                   <div class="hour-temp">{{ hour.temperature }}°</div>
+                  <div class="hour-feels">{{ hour.feelsLike }}°</div>
                   <div class="hour-desc">{{ hour.description }}</div>
                   <div class="hour-details">
                     <small>💧 {{ hour.humidity }}%</small>
                     <small>🌪️ {{ hour.windSpeed }} km/h {{ hour.windDirection }}</small>
+                    <small *ngIf="hour.windGust">💨 {{ hour.windGust }} km/h</small>
                     <small *ngIf="hour.precipitation > 0">🌧️ {{ hour.precipitation }}mm</small>
+                    <small>👁️ {{ hour.visibility }}km</small>
                   </div>
                 </div>
+              </div>
+              
+              <!-- Contador de horas actualizado -->
+              <div class="hours-counter">
+                <small *ngIf="selectedDay === 0">
+                  📊 Mostrando {{ getFilteredHours().length }} horas desde ahora ({{ getCurrentHour() }})
+                </small>
+                <small *ngIf="selectedDay !== 0">
+                  📊 Mostrando {{ getFilteredHours().length }} horas completas del día
+                </small>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Botón limpiar (movido al final) -->
-      <button (click)="clearSearch()" class="clear-btn">
-        🗑️ Limpiar Búsqueda
-      </button>
-    </div>
-  </div>
+  <!-- Botón limpiar (movido al final) -->
+  <button (click)="clearSearch()" class="clear-btn">
+    🗑️ Limpiar Búsqueda
+  </button>
 </div>

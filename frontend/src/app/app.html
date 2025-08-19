@@ -1,11 +1,29 @@
-<main class="main">
-  <div class="content">
-    <!-- Mantenemos el componente saludo si quieres 
-    <app-saludo></app-saludo> -->
-    
-    <!-- Agregamos el componente del clima -->
-    <app-weather></app-weather>
-  </div>
-</main>
+<div class="app-layout">
+  <!-- Header -->
+  <app-header 
+    [showToggle]="isMobile" 
+    (toggleMobileNav)="toggleSidebar()">
+  </app-header>
 
-<router-outlet />
+  <!-- Layout Container -->
+  <div class="layout-container" [class.mobile]="isMobile">
+    <!-- Sidebar -->
+    <app-sidebar 
+      [isOpen]="sidebarOpen"
+      [isMobile]="isMobile"
+      (closeSidebar)="closeSidebar()">
+    </app-sidebar>
+
+    <!-- Main Content -->
+    <main class="main-content" 
+          [class.sidebar-open]="sidebarOpen"
+          [class.mobile]="isMobile">
+      <div class="content">
+        <!-- Agregamos el componente del clima -->
+        <app-weather></app-weather>
+      </div>
+    </main>
+  </div>
+
+  <router-outlet />
+</div>

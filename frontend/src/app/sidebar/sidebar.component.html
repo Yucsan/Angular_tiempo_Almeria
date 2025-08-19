@@ -1,0 +1,45 @@
+<div class="sidebar" [class.open]="isOpen" [class.mobile]="isMobile">
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
+    <div class="branding">
+      <a [routerLink]="['/']">
+        <img src="images/logoworldweather.png" alt="logo worldweather" class="logo" />
+      </a>
+    </div>
+
+   
+
+    <!-- Close button only for mobile -->
+    <button 
+      *ngIf="isMobile" 
+      mat-icon-button
+      (click)="onCloseSidebar()"
+      class="close-btn"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav">
+    <mat-nav-list>
+      <a 
+        mat-list-item 
+        *ngFor="let item of menuItems" 
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        (click)="isMobile && onCloseSidebar()"
+      >
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle>{{ item.label }}</span>
+      </a>
+    </mat-nav-list>
+  </nav>
+</div>
+
+<!-- Overlay for mobile -->
+<div 
+  *ngIf="isMobile && isOpen" 
+  class="sidebar-overlay"
+  (click)="onCloseSidebar()"
+></div>

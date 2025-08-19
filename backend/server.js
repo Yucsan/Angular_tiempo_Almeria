@@ -1,4 +1,4 @@
-// Serve.js
+// Serve.js - Backend actualizado para WeatherAPI.com
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -11,9 +11,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// API Key de OpenWeatherMap (necesitas registrarte en openweathermap.org)
-const API_KEY = process.env.OPENWEATHER_API_KEY || 'tu_api_key_aqui';
-const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+// API Key de WeatherAPI.com
+const API_KEY = process.env.WEATHERAPI_KEY || 'ce43e96155294a8780f155344251308';
+const BASE_URL = 'https://api.weatherapi.com/v1';
 
 // Función para convertir grados de viento a dirección textual
 function getWindDirection(degrees) {
@@ -25,41 +25,41 @@ function getWindDirection(degrees) {
 // Función para formatear los datos del clima actual
 function formatWeatherData(data) {
   return {
-    location: `${data.name}, ${data.sys.country}`,
-    temperature: Math.round(data.main.temp),
-    feelsLike: Math.round(data.main.feels_like),
-    description: data.weather[0].description,
-    humidity: data.main.humidity,
-    pressure: data.main.pressure,
-    windSpeed: Math.round(data.wind.speed * 3.6), // Convertir de m/s a km/h
-    windDirection: data.wind.deg ? getWindDirection(data.wind.deg) : 'N/A',
-    windDegrees: data.wind.deg || 0,
-    windGust: data.wind.gust ? Math.round(data.wind.gust * 3.6) : null,
-    visibility: data.visibility ? Math.round(data.visibility / 1000) : null, // en km
-    icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`
+    location: `${data.location.name}, ${data.location.country}`,
+    temperature: Math.round(data.current.temp_c),
+    feelsLike: Math.round(data.current.feelslike_c),
+    description: data.current.condition.text,
+    humidity: data.current.humidity,
+    pressure: Math.round(data.current.pressure_mb),
+    windSpeed: Math.round(data.current.wind_kph),
+    windDirection: getWindDirection(data.current.wind_degree),
+    windDegrees: data.current.wind_degree,
+    windGust: data.current.gust_kph ? Math.round(data.current.gust_kph) : null,
+    visibility: Math.round(data.current.vis_km),
+    icon: `https:${data.current.condition.icon}`.replace('64x64', '128x128') // Mejor resolución
   };
 }
 
 // Función para formatear datos del pronóstico por horas
-function formatHourlyForecastData(item) {
+function formatHourlyForecastData(hour, date) {
   return {
-    dateTime: item.dt_txt,
-    timestamp: item.dt,
-    temperature: Math.round(item.main.temp),
-    feelsLike: Math.round(item.main.feels_like),
-    tempMin: Math.round(item.main.temp_min),
-    tempMax: Math.round(item.main.temp_max),
-    description: item.weather[0].description,
-    humidity: item.main.humidity,
-    pressure: item.main.pressure,
-    windSpeed: Math.round(item.wind.speed * 3.6), // km/h
-    windDirection: item.wind.deg ? getWindDirection(item.wind.deg) : 'N/A',
-    windDegrees: item.wind.deg || 0,
-    windGust: item.wind.gust ? Math.round(item.wind.gust * 3.6) : null, // km/h
-    visibility: item.visibility ? Math.round(item.visibility / 1000) : null, // km
-    cloudiness: item.clouds.all, // porcentaje
-    precipitation: item.rain ? item.rain['3h'] || 0 : item.snow ? item.snow['3h'] || 0 : 0,
-    icon: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`
+    dateTime: `${date} ${hour.time.split(' ')[1]}`,
+    timestamp: new Date(`${date} ${hour.time.split(' ')[1]}`).getTime() / 1000,
+    temperature: Math.round(hour.temp_c),
+    feelsLike: Math.round(hour.feelslike_c),
+    tempMin: Math.round(hour.temp_c), // WeatherAPI no da min/max por hora, usamos temp actual
+    tempMax: Math.round(hour.temp_c),
+    description: hour.condition.text,
+    humidity: hour.humidity,
+    pressure: Math.round(hour.pressure_mb),
+    windSpeed: Math.round(hour.wind_kph),
+    windDirection: getWindDirection(hour.wind_degree),
+    windDegrees: hour.wind_degree,
+    windGust: hour.gust_kph ? Math.round(hour.gust_kph) : null,
+    visibility: Math.round(hour.vis_km),
+    cloudiness: hour.cloud, // porcentaje
+    precipitation: hour.precip_mm || 0,
+    icon: `https:${hour.condition.icon}`.replace('64x64', '128x128')
   };
 }
 
@@ -69,7 +69,7 @@ app.get('/api/weather/:city', async (req, res) => {
     const { city } = req.params;
     
     const response = await axios.get(
-      `${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric&lang=es`
+      `${BASE_URL}/current.json?key=${API_KEY}&q=${city}&lang=es`
     );
     
     const weatherData = formatWeatherData(response.data);
@@ -78,7 +78,7 @@ app.get('/api/weather/:city', async (req, res) => {
   } catch (error) {
     console.error('Error fetching weather:', error.message);
     
-    if (error.response && error.response.status === 404) {
+    if (error.response && error.response.status === 400) {
       res.status(404).json({ 
         error: 'Ciudad no encontrada. Verifica el nombre e intenta nuevamente.' 
       });
@@ -96,7 +96,7 @@ app.get('/api/weather/coords/:lat/:lon', async (req, res) => {
     const { lat, lon } = req.params;
     
     const response = await axios.get(
-      `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
+      `${BASE_URL}/current.json?key=${API_KEY}&q=${lat},${lon}&lang=es`
     );
     
     const weatherData = formatWeatherData(response.data);
@@ -112,78 +112,81 @@ app.get('/api/weather/coords/:lat/:lon', async (req, res) => {
 
 // Ruta de prueba
 app.get('/api/test', (req, res) => {
-  res.json({ message: 'API del clima funcionando correctamente! 🌤️' });
+  res.json({ message: 'API del clima con WeatherAPI funcionando correctamente! 🌤️' });
 });
 
-// Ruta para obtener pronóstico detallado de 5 días por horas
+// Ruta para saludo
+app.get('/api/saludo', (req, res) => {
+  res.json({ mensaje: 'Hola! Bienvenido a la aplicación del clima de Almería 🌞' });
+});
+
+// Ruta para obtener pronóstico detallado de 5 días con datos por hora
 app.get('/api/forecast/:city', async (req, res) => {
   try {
     const { city } = req.params;
     
+    // WeatherAPI permite hasta 10 días de pronóstico, usamos 5
     const response = await axios.get(
-      `${BASE_URL}/forecast?q=${city}&appid=${API_KEY}&units=metric&lang=es`
+      `${BASE_URL}/forecast.json?key=${API_KEY}&q=${city}&days=5&lang=es&alerts=no`
     );
     
-    // Formatear datos del pronóstico por horas
-    const hourlyForecast = response.data.list.map(formatHourlyForecastData);
+    const data = response.data;
+    let allHourlyForecast = [];
     
-    // Agrupar por días para resumen diario
+    // Procesar cada día del pronóstico
     const dailyForecast = {};
-    hourlyForecast.forEach(item => {
-      const date = item.dateTime.split(' ')[0];
-      if (!dailyForecast[date]) {
-        dailyForecast[date] = {
-          date: date,
-          temperatures: [],
-          descriptions: [],
-          windSpeeds: [],
-          windGusts: [],
-          humidity: [],
-          items: []
-        };
-      }
-      dailyForecast[date].temperatures.push(item.temperature);
-      dailyForecast[date].descriptions.push(item.description);
-      dailyForecast[date].windSpeeds.push(item.windSpeed);
-      if (item.windGust) dailyForecast[date].windGusts.push(item.windGust);
-      dailyForecast[date].humidity.push(item.humidity);
-      dailyForecast[date].items.push(item);
-    });
     
-    // Crear resumen diario
-    const dailySummary = Object.keys(dailyForecast).map(date => {
-      const day = dailyForecast[date];
-      return {
+    data.forecast.forecastday.forEach(day => {
+      const date = day.date;
+      
+      // Procesar cada hora del día (24 horas)
+      const dayHourlyData = day.hour.map(hour => 
+        formatHourlyForecastData(hour, date)
+      );
+      
+      allHourlyForecast = allHourlyForecast.concat(dayHourlyData);
+      
+      // Crear resumen diario
+      const temperatures = dayHourlyData.map(h => h.temperature);
+      const windSpeeds = dayHourlyData.map(h => h.windSpeed);
+      const windGusts = dayHourlyData.filter(h => h.windGust).map(h => h.windGust);
+      const humidities = dayHourlyData.map(h => h.humidity);
+      const descriptions = dayHourlyData.map(h => h.description);
+      
+      dailyForecast[date] = {
         date: date,
-        tempMin: Math.min(...day.temperatures),
-        tempMax: Math.max(...day.temperatures),
-        avgHumidity: Math.round(day.humidity.reduce((a, b) => a + b, 0) / day.humidity.length),
-        maxWindSpeed: Math.max(...day.windSpeeds),
-        maxWindGust: day.windGusts.length > 0 ? Math.max(...day.windGusts) : null,
-        dominantDescription: day.descriptions.sort((a,b) => 
-          day.descriptions.filter(v => v === a).length - day.descriptions.filter(v => v === b).length
+        tempMin: Math.min(...temperatures),
+        tempMax: Math.max(...temperatures),
+        avgHumidity: Math.round(humidities.reduce((a, b) => a + b, 0) / humidities.length),
+        maxWindSpeed: Math.max(...windSpeeds),
+        maxWindGust: windGusts.length > 0 ? Math.max(...windGusts) : null,
+        dominantDescription: descriptions.sort((a, b) => 
+          descriptions.filter(v => v === a).length - descriptions.filter(v => v === b).length
         ).pop(),
-        hourlyData: day.items
+        hourlyData: dayHourlyData
       };
     });
     
+    // Crear resumen diario ordenado
+    const dailySummary = Object.keys(dailyForecast).map(date => dailyForecast[date]);
+    
     res.json({
-      location: `${response.data.city.name}, ${response.data.city.country}`,
+      location: `${data.location.name}, ${data.location.country}`,
       coordinates: {
-        lat: response.data.city.coord.lat,
-        lon: response.data.city.coord.lon
+        lat: data.location.lat,
+        lon: data.location.lon
       },
-      timezone: response.data.city.timezone,
-      totalHours: hourlyForecast.length,
-      totalDays: Object.keys(dailyForecast).length,
-      hourlyForecast: hourlyForecast,
+      timezone: data.location.tz_id,
+      totalHours: allHourlyForecast.length,
+      totalDays: dailySummary.length,
+      hourlyForecast: allHourlyForecast,
       dailySummary: dailySummary
     });
     
   } catch (error) {
     console.error('Error fetching forecast:', error.message);
     
-    if (error.response && error.response.status === 404) {
+    if (error.response && error.response.status === 400) {
       res.status(404).json({ 
         error: 'Ciudad no encontrada para el pronóstico. Verifica el nombre e intenta nuevamente.' 
       });
@@ -201,46 +204,49 @@ app.get('/api/forecast/coords/:lat/:lon', async (req, res) => {
     const { lat, lon } = req.params;
     
     const response = await axios.get(
-      `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
+      `${BASE_URL}/forecast.json?key=${API_KEY}&q=${lat},${lon}&days=5&lang=es&alerts=no`
     );
     
-    const hourlyForecast = response.data.list.map(formatHourlyForecastData);
+    const data = response.data;
+    let allHourlyForecast = [];
     
-    // Agrupar por días para resumen diario
+    // Procesar cada día del pronóstico
     const dailyForecast = {};
-    hourlyForecast.forEach(item => {
-      const date = item.dateTime.split(' ')[0];
-      if (!dailyForecast[date]) {
-        dailyForecast[date] = {
-          date: date,
-          temperatures: [],
-          windSpeeds: [],
-          windGusts: [],
-          items: []
-        };
-      }
-      dailyForecast[date].temperatures.push(item.temperature);
-      dailyForecast[date].windSpeeds.push(item.windSpeed);
-      if (item.windGust) dailyForecast[date].windGusts.push(item.windGust);
-      dailyForecast[date].items.push(item);
-    });
     
-    const dailySummary = Object.keys(dailyForecast).map(date => {
-      const day = dailyForecast[date];
-      return {
+    data.forecast.forecastday.forEach(day => {
+      const date = day.date;
+      
+      // Procesar cada hora del día (24 horas)
+      const dayHourlyData = day.hour.map(hour => 
+        formatHourlyForecastData(hour, date)
+      );
+      
+      allHourlyForecast = allHourlyForecast.concat(dayHourlyData);
+      
+      // Crear resumen diario
+      const temperatures = dayHourlyData.map(h => h.temperature);
+      const windSpeeds = dayHourlyData.map(h => h.windSpeed);
+      const windGusts = dayHourlyData.filter(h => h.windGust).map(h => h.windGust);
+      
+      dailyForecast[date] = {
         date: date,
-        tempMin: Math.min(...day.temperatures),
-        tempMax: Math.max(...day.temperatures),
-        maxWindSpeed: Math.max(...day.windSpeeds),
-        maxWindGust: day.windGusts.length > 0 ? Math.max(...day.windGusts) : null,
-        hourlyData: day.items
+        tempMin: Math.min(...temperatures),
+        tempMax: Math.max(...temperatures),
+        maxWindSpeed: Math.max(...windSpeeds),
+        maxWindGust: windGusts.length > 0 ? Math.max(...windGusts) : null,
+        hourlyData: dayHourlyData
       };
     });
     
+    const dailySummary = Object.keys(dailyForecast).map(date => dailyForecast[date]);
+    
     res.json({
-      location: `${response.data.city.name}, ${response.data.city.country}`,
+      location: `${data.location.name}, ${data.location.country}`,
       coordinates: { lat: parseFloat(lat), lon: parseFloat(lon) },
-      hourlyForecast: hourlyForecast,
+      timezone: data.location.tz_id,
+      totalHours: allHourlyForecast.length,
+      totalDays: dailySummary.length,
+      hourlyForecast: allHourlyForecast,
       dailySummary: dailySummary
     });
     
@@ -260,10 +266,11 @@ app.use('*', (req, res) => {
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📡 API del clima disponible en http://localhost:${PORT}/api/weather`);
+  console.log(`📡 API del clima con WeatherAPI disponible en http://localhost:${PORT}/api/weather`);
+  console.log(`🌤️ Usando WeatherAPI.com con datos hora por hora`);
   
-  if (!process.env.OPENWEATHER_API_KEY) {
-    console.log('⚠️  IMPORTANTE: No se encontró OPENWEATHER_API_KEY en las variables de entorno');
-    console.log('   Obtén tu API key gratuita en: https://openweathermap.org/api');
+  if (!process.env.WEATHERAPI_KEY) {
+    console.log('⚠️  IMPORTANTE: No se encontró WEATHERAPI_KEY en las variables de entorno');
+    console.log('   Usando API key por defecto (recomendado: configurar en .env)');
   }
 });

@@ -1,0 +1,92 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.layout-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+
+  &.mobile {
+    // En móvil el sidebar es overlay
+  }
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: margin-left 0.3s ease-in-out;
+  margin-top: 64px; // Height of header
+  position: relative;
+
+  // Mobile: no margin adjustment needed (overlay)
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  // Asegurar que el contenido use todo el ancho disponible
+  box-sizing: border-box;
+}
+
+// Desktop specific styles
+@media (min-width: 769px) {
+  .layout-container {
+    .main-content {
+      // Cambio importante: usar margin-left solo cuando el sidebar esté abierto
+      // y ajustar dinámicamente según el estado
+      &.sidebar-open {
+        margin-left: 280px; // Ancho del sidebar
+      }
+      
+      // Cuando no está abierto, sin margin
+      &:not(.sidebar-open) {
+        margin-left: 0;
+      }
+    }
+  }
+  
+  // Si quieres que siempre esté empujado en desktop, usa esto en su lugar:
+  .sidebar {
+    &:not(.mobile) {
+      + .main-content {
+        margin-left: 280px !important;
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .content {
+    padding: 15px;
+  }
+  
+  .layout-container {
+    .main-content {
+      margin-left: 0; // No margin on mobile
+    }
+  }
+}
+
+// Alternativa más simple si quieres que en desktop siempre esté empujado:
+// Descomenta esto y comenta el bloque anterior de desktop
+/*
+@media (min-width: 769px) {
+  .main-content {
+    margin-left: 280px !important; // Siempre empujado en desktop
+  }
+}
+*/

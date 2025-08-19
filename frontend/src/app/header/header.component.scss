@@ -1,0 +1,38 @@
+.header-toolbar {
+  background-color: #1976d2;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 64px;
+  padding: 0 16px;
+}
+
+.hamburger-btn {
+  color: white;
+  margin-right: 16px;
+}
+
+.app-title {
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.flex-spacer {
+  flex: 1 1 auto;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}

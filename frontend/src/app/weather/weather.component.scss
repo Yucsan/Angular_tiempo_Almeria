@@ -1,4 +1,3 @@
-// Variables de colores para consistencia
 $primary-blue: #74b9ff;
 $primary-dark: #0984e3;
 $success-green: #00b894;
@@ -10,27 +9,16 @@ $bg-light: #f8f9fa;
 $white: white;
 
 .weather-container {
-  display: flex;
-  justify-content: center;
   padding: 20px;
-  min-height: 100vh;
-  background: linear-gradient(135deg, $primary-blue, $primary-dark);
-}
-
-.weather-card {
-  background: $white;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  max-width: 600px; // Aumentado para acomodar nuevo contenido
   width: 100%;
-  min-height: 400px;
+  height: 100%;
+  overflow-y: auto;
 
   h2 {
     text-align: center;
     color: $text-dark;
-    margin-bottom: 30px;
-    font-size: 2rem;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
   }
 }
 
@@ -39,6 +27,10 @@ $white: white;
   flex-direction: column;
   gap: 15px;
   margin-bottom: 20px;
+  background: $white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
   .search-input {
     padding: 15px;
@@ -54,11 +46,11 @@ $white: white;
   }
 
   .search-btn, .location-btn {
-    padding: 15px 20px;
+    padding: 12px 16px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     transition: all 0.3s;
 
@@ -71,19 +63,13 @@ $white: white;
   .search-btn {
     background: $primary-blue;
     color: $white;
-
-    &:hover:not(:disabled) {
-      background: $primary-dark;
-    }
+    &:hover:not(:disabled) { background: $primary-dark; }
   }
 
   .location-btn {
     background: $success-green;
     color: $white;
-
-    &:hover:not(:disabled) {
-      background: $success-dark;
-    }
+    &:hover:not(:disabled) { background: $success-dark; }
   }
 }
 
@@ -96,34 +82,31 @@ $white: white;
   margin-bottom: 20px;
 }
 
-.loading {
+.loading, .forecast-loading {
   text-align: center;
   padding: 40px;
-
-  .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid $primary-blue;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-  }
 
   p {
     color: $text-gray;
     font-style: italic;
+    margin-top: 10px;
   }
 }
 
-// NUEVO: Spinner pequeño para pronóstico
-.spinner-small {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid $primary-blue;
+.loading .spinner, .spinner-small {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid $primary-blue;
   border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+.spinner-small {
   width: 20px;
   height: 20px;
-  animation: spin 1s linear infinite;
+  border-width: 3px;
   margin: 0 auto 10px;
 }
 
@@ -151,65 +134,69 @@ $white: white;
     }
   }
 
-  .weather-details {
-    .temp-main {
-      text-align: center;
-      margin-bottom: 30px;
+  .temp-main {
+    text-align: center;
+    margin-bottom: 20px;
+    background: $white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
-      .temperature {
+    .temperature {
+      display: block;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: $primary-blue;
+      margin-bottom: 5px;
+    }
+
+    .feels-like {
+      display: block;
+      font-size: 1rem;
+      color: $text-gray;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    .description {
+      font-size: 1.2rem;
+      color: $text-gray;
+      text-transform: capitalize;
+    }
+  }
+
+  .weather-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+    background: $white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    .stat {
+      background: $bg-light;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+
+      .stat-label {
         display: block;
-        font-size: 3rem;
-        font-weight: bold;
-        color: $primary-blue;
+        font-size: 0.85rem;
+        color: $text-gray;
         margin-bottom: 5px;
       }
 
-      // NUEVO: Sensación térmica
-      .feels-like {
-        display: block;
+      .stat-value {
         font-size: 1rem;
-        color: $text-gray;
-        margin-bottom: 10px;
-        font-style: italic;
-      }
-
-      .description {
-        font-size: 1.2rem;
-        color: $text-gray;
-        text-transform: capitalize;
-      }
-    }
-
-    .weather-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); // Más flexible
-      gap: 15px;
-      margin-bottom: 20px;
-
-      .stat {
-        background: $bg-light;
-        padding: 15px;
-        border-radius: 10px;
-        text-align: center;
-
-        .stat-label {
-          display: block;
-          font-size: 0.85rem;
-          color: $text-gray;
-          margin-bottom: 5px;
-        }
-
-        .stat-value {
-          font-size: 1rem;
-          font-weight: bold;
-          color: $text-dark;
-          word-break: break-word;
-        }
+        font-weight: bold;
+        color: $text-dark;
+        word-break: break-word;
       }
     }
   }
 
-  // NUEVOS: Botones de control
   .control-buttons {
     display: flex;
     gap: 10px;
@@ -227,12 +214,7 @@ $white: white;
       font-weight: 600;
       transition: all 0.3s;
 
-      &:hover:not(:disabled) {
-        background: $primary-blue;
-        color: $white;
-      }
-
-      &.active {
+      &:hover:not(:disabled), &.active {
         background: $primary-blue;
         color: $white;
       }
@@ -244,13 +226,12 @@ $white: white;
     }
   }
 
-  // NUEVA: Vista detallada
-  .detailed-view {
-    background: #fafbfc;
+  .detailed-view, .forecast-section {
+    background: $white;
     border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
-    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
     h4 {
       color: $text-dark;
@@ -258,234 +239,237 @@ $white: white;
       font-size: 1.3rem;
       text-align: center;
     }
+  }
 
-    .detailed-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+  .detailed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
 
-      .detail-card {
-        background: $white;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    .detail-card {
+      background: $white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
-        h5 {
-          color: $primary-blue;
-          margin-bottom: 10px;
-          font-size: 1.1rem;
-        }
+      h5 {
+        color: $primary-blue;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
 
-        p {
-          margin: 5px 0;
-          font-size: 0.9rem;
-          color: $text-gray;
-
-          strong {
-            color: $text-dark;
-          }
-        }
+      p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: $text-gray;
+        strong { color: $text-dark; }
       }
     }
   }
 
-  // NUEVA: Sección de pronóstico
-  .forecast-section {
-    background: #fafbfc;
-    border-radius: 15px;
-    padding: 20px;
+  .day-tabs {
+    display: flex;
+    gap: 5px;
     margin-bottom: 20px;
-    border: 1px solid #e9ecef;
+    overflow-x: auto;
 
-    h4 {
-      color: $text-dark;
-      margin-bottom: 20px;
-      font-size: 1.3rem;
+    .day-tab {
+      min-width: 100px;
+      padding: 10px 8px;
+      border: 2px solid #e9ecef;
+      background: $white;
+      border-radius: 8px;
+      cursor: pointer;
       text-align: center;
-    }
+      transition: all 0.3s;
+      flex-shrink: 0;
 
-    .forecast-loading {
-      text-align: center;
-      padding: 20px;
+      .day-name {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $text-dark;
+        margin-bottom: 3px;
+      }
 
-      p {
+      .day-temps {
+        display: block;
+        font-size: 0.75rem;
         color: $text-gray;
-        font-style: italic;
-        margin-top: 10px;
+      }
+
+      &:hover {
+        border-color: $primary-blue;
+        background: rgba($primary-blue, 0.05);
+      }
+
+      &.active {
+        border-color: $primary-blue;
+        background: $primary-blue;
+        .day-name { color: $white; }
+        .day-temps { color: rgba($white, 0.9); }
+      }
+    }
+  }
+
+  .day-summary {
+    background: $white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    h5 {
+      color: $primary-blue;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    .day-main-stats {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+    }
+
+    .temp-range {
+      text-align: center;
+      .temp-min, .temp-max {
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 5px 0;
+      }
+      .temp-min { color: #74b9ff; }
+      .temp-max { color: #ff7675; }
+    }
+
+    .day-conditions p {
+      margin: 8px 0;
+      font-size: 0.9rem;
+      color: $text-gray;
+      strong { color: $text-dark; }
+    }
+  }
+
+  .hourly-forecast {
+    background: $white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    h6 {
+      color: $text-dark;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    .day-quick-stats {
+      display: flex;
+      justify-content: space-around;
+      background: $bg-light;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 5px;
+
+      .quick-stat {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        .stat-text {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: $text-dark;
+        }
       }
     }
 
-    .forecast-content {
-      .day-tabs {
-        display: flex;
-        gap: 5px;
-        margin-bottom: 20px;
-        overflow-x: auto;
-        padding-bottom: 5px;
+    .hourly-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 10px 0;
 
-        .day-tab {
-          min-width: 100px;
-          padding: 10px 8px;
-          border: 2px solid #e9ecef;
-          background: $white;
-          border-radius: 8px;
-          cursor: pointer;
-          text-align: center;
-          transition: all 0.3s;
-          flex-shrink: 0;
+      .hour-item {
+        min-width: 110px;
+        text-align: center;
+        padding: 12px;
+        background: $bg-light;
+        border-radius: 8px;
+        flex-shrink: 0;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s;
 
-          .day-name {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: $text-dark;
-            margin-bottom: 3px;
-          }
+        &:hover {
+          background: rgba($primary-blue, 0.05);
+          border-color: $primary-blue;
+          transform: translateY(-2px);
+        }
 
-          .day-temps {
-            display: block;
-            font-size: 0.75rem;
-            color: $text-gray;
-          }
+        .hour-time {
+          background: $primary-blue;
+          color: $white;
+          padding: 3px 8px;
+          border-radius: 12px;
+          font-size: 0.8rem;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
 
-          &:hover {
-            border-color: $primary-blue;
-            background: rgba($primary-blue, 0.05);
-          }
+        .hour-icon {
+          width: 45px;
+          height: 45px;
+          margin: 6px 0;
+        }
 
-          &.active {
-            border-color: $primary-blue;
-            background: $primary-blue;
+        .hour-temp {
+          font-size: 1.2rem;
+          font-weight: bold;
+          color: $primary-blue;
+          margin: 5px 0;
+        }
 
-            .day-name {
-              color: $white;
-            }
+        .hour-feels {
+          font-size: 0.8rem;
+          color: $text-gray;
+          margin: 2px 0;
+          font-style: italic;
+        }
 
-            .day-temps {
-              color: rgba($white, 0.9);
-            }
-          }
+        .hour-desc {
+          font-size: 0.75rem;
+          color: $text-gray;
+          margin-bottom: 8px;
+          text-transform: capitalize;
+          line-height: 1.2;
+          min-height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hour-details small {
+          display: block;
+          font-size: 0.7rem;
+          color: $text-gray;
+          margin: 1px 0;
         }
       }
+    }
 
-      .selected-day-details {
-        .day-summary {
-          background: $white;
-          padding: 20px;
-          border-radius: 10px;
-          margin-bottom: 15px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    .hours-counter {
+      text-align: center;
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba($primary-blue, 0.05);
+      border-radius: 6px;
 
-          h5 {
-            color: $primary-blue;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            text-align: center;
-          }
-
-          .day-main-stats {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
-            align-items: start;
-
-            .temp-range {
-              text-align: center;
-
-              .temp-min, .temp-max {
-                display: block;
-                font-size: 1.1rem;
-                font-weight: 600;
-                margin: 5px 0;
-              }
-
-              .temp-min {
-                color: #74b9ff;
-              }
-
-              .temp-max {
-                color: #ff7675;
-              }
-            }
-
-            .day-conditions {
-              p {
-                margin: 8px 0;
-                font-size: 0.9rem;
-                color: $text-gray;
-
-                strong {
-                  color: $text-dark;
-                }
-              }
-            }
-          }
-        }
-
-        .hourly-forecast {
-          background: $white;
-          padding: 15px;
-          border-radius: 10px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-          h6 {
-            color: $text-dark;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-          }
-
-          .hourly-scroll {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding: 10px 0;
-
-            .hour-item {
-              min-width: 100px;
-              text-align: center;
-              padding: 10px;
-              background: $bg-light;
-              border-radius: 8px;
-              flex-shrink: 0;
-
-              .hour-time {
-                font-size: 0.85rem;
-                font-weight: 600;
-                color: $text-dark;
-                margin-bottom: 5px;
-              }
-
-              .hour-icon {
-                width: 40px;
-                height: 40px;
-                margin: 5px 0;
-              }
-
-              .hour-temp {
-                font-size: 1.1rem;
-                font-weight: bold;
-                color: $primary-blue;
-                margin: 5px 0;
-              }
-
-              .hour-desc {
-                font-size: 0.75rem;
-                color: $text-gray;
-                margin-bottom: 8px;
-                text-transform: capitalize;
-              }
-
-              .hour-details {
-                small {
-                  display: block;
-                  font-size: 0.7rem;
-                  color: $text-gray;
-                  margin: 2px 0;
-                }
-              }
-            }
-          }
-        }
+      small {
+        color: $text-gray;
+        font-weight: 600;
+        font-size: 0.8rem;
       }
     }
   }
@@ -500,132 +484,49 @@ $white: white;
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.3s;
-
-    &:hover {
-      background: $text-dark;
-    }
+    &:hover { background: $text-dark; }
   }
 }
 
-// Responsive design actualizado
 @media (max-width: 768px) {
-  .weather-container {
-    padding: 10px;
-  }
-
-  .weather-card {
-    padding: 20px;
-    max-width: 100%;
-  }
-
-  .search-form {
-    .search-btn, .location-btn {
-      padding: 12px 16px;
-      font-size: 0.9rem;
-    }
-  }
-
+  .weather-container { padding: 10px; }
+  .weather-card { padding: 20px; }
+  .search-form .search-btn, .search-form .location-btn { padding: 12px 16px; font-size: 0.9rem; }
   .weather-info {
-    .weather-details {
-      .temp-main .temperature {
-        font-size: 2.5rem;
-      }
-
-      .weather-stats {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-
-        .stat {
-          padding: 12px;
-
-          .stat-label {
-            font-size: 0.8rem;
-          }
-
-          .stat-value {
-            font-size: 0.9rem;
-          }
-        }
-      }
-    }
-
-    .control-buttons {
-      flex-direction: column;
-
-      .toggle-btn {
-        font-size: 0.85rem;
-        padding: 10px 12px;
-      }
-    }
-
-    .detailed-view {
-      .detailed-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .forecast-section {
-      .forecast-content {
-        .selected-day-details {
-          .day-summary {
-            .day-main-stats {
-              grid-template-columns: 1fr;
-              gap: 15px;
-            }
-          }
-        }
-      }
-    }
+    .temp-main .temperature { font-size: 2.5rem; }
+    .weather-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .weather-stats .stat { padding: 12px; }
+    .weather-stats .stat .stat-label { font-size: 0.8rem; }
+    .weather-stats .stat .stat-value { font-size: 0.9rem; }
+    .control-buttons { flex-direction: column; }
+    .control-buttons .toggle-btn { font-size: 0.85rem; padding: 10px 12px; }
+    .detailed-grid { grid-template-columns: 1fr; }
+    .day-summary .day-main-stats { grid-template-columns: 1fr; gap: 15px; }
+    .day-quick-stats { flex-direction: column; gap: 8px; }
+    .day-quick-stats .quick-stat { justify-content: center; }
+    .day-quick-stats .quick-stat .stat-text { font-size: 0.75rem; }
+    .hourly-scroll .hour-item { min-width: 90px; padding: 8px 6px; }
+    .hourly-scroll .hour-item .hour-time { font-size: 0.75rem; padding: 2px 6px; }
+    .hourly-scroll .hour-item .hour-icon { width: 35px; height: 35px; }
+    .hourly-scroll .hour-item .hour-temp { font-size: 1rem; }
+    .hourly-scroll .hour-item .hour-feels { font-size: 0.7rem; }
+    .hourly-scroll .hour-item .hour-desc { font-size: 0.7rem; min-height: 24px; }
+    .hourly-scroll .hour-item .hour-details small { font-size: 0.65rem; }
   }
 }
 
 @media (max-width: 480px) {
-  .weather-card {
-    padding: 15px;
-  }
-
-  .weather-info {
-    .weather-details {
-      .weather-stats {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .forecast-section {
-      padding: 15px;
-
-      .forecast-content {
-        .day-tabs {
-          .day-tab {
-            min-width: 80px;
-            padding: 8px 6px;
-
-            .day-name {
-              font-size: 0.8rem;
-            }
-
-            .day-temps {
-              font-size: 0.7rem;
-            }
-          }
-        }
-
-        .selected-day-details {
-          .hourly-forecast {
-            .hourly-scroll {
-              .hour-item {
-                min-width: 80px;
-                padding: 8px;
-
-                .hour-icon {
-                  width: 30px;
-                  height: 30px;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  .weather-card { padding: 15px; }
+  .weather-info .weather-stats { grid-template-columns: 1fr; }
+  .forecast-section { padding: 15px; }
+  .forecast-section .day-tabs .day-tab { min-width: 80px; padding: 8px 6px; }
+  .forecast-section .day-tabs .day-tab .day-name { font-size: 0.8rem; }
+  .forecast-section .day-tabs .day-tab .day-temps { font-size: 0.7rem; }
+  .forecast-section .hourly-scroll .hour-item { min-width: 80px; padding: 8px; }
+  .forecast-section .hourly-scroll .hour-item .hour-time { font-size: 0.7rem; padding: 2px 4px; }
+  .forecast-section .hourly-scroll .hour-item .hour-icon { width: 30px; height: 30px; }
+  .forecast-section .hourly-scroll .hour-item .hour-temp { font-size: 0.9rem; }
+  .forecast-section .hourly-scroll .hour-item .hour-feels { font-size: 0.65rem; }
+  .forecast-section .hourly-scroll .hour-item .hour-desc { font-size: 0.65rem; min-height: 20px; }
+  .forecast-section .hourly-scroll .hour-item .hour-details small { font-size: 0.6rem; }
 }

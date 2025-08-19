@@ -1,0 +1,27 @@
+<mat-toolbar class="header-toolbar">
+  <!-- Mobile Menu Button -->
+  <button 
+    *ngIf="showToggle" 
+    mat-icon-button 
+    (click)="toggleMobileNav.emit()" 
+    class="hamburger-btn"
+    aria-label="Toggle navigation"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- App Title/Logo -->
+  <span class="app-title">Weather App</span>
+
+  <!-- Spacer -->
+  <span class="flex-spacer"></span>
+
+  <!-- Profile Section -->
+  <div class="profile-section">
+    <img 
+      src="./images/avatar.jpg" 
+      alt="Profile" 
+      class="profile-avatar"
+    />
+  </div>
+</mat-toolbar>

@@ -1,0 +1,131 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 999;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+
+  &.open {
+    transform: translateX(0);
+  }
+
+  // Desktop: always open and push content
+  @media (min-width: 769px) {
+    position: fixed; // Mantener fixed para que siempre esté visible
+    transform: translateX(0); // Siempre visible en desktop
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #e0e0e0;
+    z-index: 998; // Menor que mobile para que el header esté encima
+    
+    // Si quieres que solo aparezca cuando esté abierto en desktop, descomenta:
+    // &:not(.open) {
+    //   transform: translateX(-100%);
+    // }
+  }
+
+  // Mobile: overlay behavior
+  &.mobile {
+    position: fixed;
+    z-index: 1001;
+    
+    &:not(.open) {
+      transform: translateX(-100%);
+    }
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+  min-height: 64px;
+  box-sizing: border-box;
+  margin-top: 3rem;
+}
+
+.branding {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  background-color: turquoise;
+  height: 150px;
+
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .logo {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
+  }
+
+  .app-name {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+.close-btn {
+  color: #666;
+}
+
+.sidebar-nav {
+  padding: 1rem 0;
+  flex: 1;
+  overflow-y: auto;
+
+  mat-nav-list {
+    padding: 0;
+  }
+
+  a[mat-list-item] {
+    color: #666;
+    transition: all 0.2s ease;
+    margin: 4px 12px;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: #f5f5f5;
+      color: #1976d2;
+    }
+
+    &.active {
+      background-color: #e3f2fd;
+      color: #1976d2;
+
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+
+    mat-icon {
+      color: inherit;
+    }
+  }
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  cursor: pointer;
+}

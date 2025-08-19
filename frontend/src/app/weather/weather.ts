@@ -216,4 +216,64 @@ export class WeatherComponent implements OnInit {
       });
     }
   }
+
+  // NUEVO: Formatear hora para mostrar (solo HH:mm)
+  formatHour(dateTime: string): string {
+    if (dateTime.includes('T')) {
+      // Para formato ISO (new Date().toISOString())
+      return dateTime.split('T')[1].substring(0, 5);
+    }
+    // Para formato normal "YYYY-MM-DD HH:mm:ss"
+    return dateTime.split(' ')[1].substring(0, 5);
+  }
+
+  // NUEVO: Obtener horas filtradas del día seleccionado (filtrar horas pasadas para hoy)
+  getFilteredHours() {
+    const selectedDay = this.getSelectedDayForecast();
+    if (!selectedDay?.hourlyData) return [];
+    
+    const now = new Date();
+    const today = now.toDateString();
+    const currentHour = now.getHours();
+    
+    // Si es el día de hoy (selectedDay === 0), filtrar horas pasadas
+    if (this.selectedDay === 0) {
+      const selectedDate = new Date(selectedDay.date);
+      
+      // Verificar si realmente es hoy
+      if (selectedDate.toDateString() === today) {
+        return selectedDay.hourlyData.filter(hour => {
+          const hourTime = parseInt(hour.dateTime.split(' ')[1].split(':')[0]);
+          return hourTime >= currentHour; // Solo mostrar hora actual y futuras
+        });
+      }
+    }
+    
+    // Para otros días, mostrar todas las 24 horas
+    return selectedDay.hourlyData;
+  }
+
+  // NUEVO: Estadísticas rápidas del día
+  getDayStats() {
+    const hours = this.getFilteredHours();
+    if (hours.length === 0) return null;
+    
+    const temps = hours.map(h => h.temperature);
+    const winds = hours.map(h => h.windSpeed);
+    const humidity = hours.map(h => h.humidity);
+    
+    return {
+      tempMin: Math.min(...temps),
+      tempMax: Math.max(...temps),
+      avgWind: Math.round(winds.reduce((a, b) => a + b, 0) / winds.length),
+      maxWind: Math.max(...winds),
+      avgHumidity: Math.round(humidity.reduce((a, b) => a + b, 0) / humidity.length)
+    };
+  }
+
+  // NUEVO: Obtener hora actual formateada
+  getCurrentHour(): string {
+    const now = new Date();
+    return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+  }
 }
