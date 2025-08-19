@@ -23,10 +23,13 @@ export class WeatherComponent implements OnInit {
   showDetailedView: boolean = false;
   showForecast: boolean = false;
   selectedDay: number = 0; // Para navegación entre días del pronóstico
+  isAutoLocating: boolean = false; // Para distinguir carga automática de manual
+  currentCoords: {lat: number, lon: number} | null = null; // Para guardar coordenadas cuando se usa geolocalización
 
   constructor(private weatherService: WeatherService) {}
 
   ngOnInit(): void {
+    this.isAutoLocating = true;
     this.getCurrentLocation();
   }
 
@@ -39,6 +42,8 @@ export class WeatherComponent implements OnInit {
 
     this.loading = true;
     this.error = '';
+    this.isAutoLocating = false; // This is a manual search
+    this.currentCoords = null; // Limpiar coordenadas al buscar por ciudad
     
     // Limpiar datos anteriores
     this.weatherData = null;
@@ -82,17 +87,32 @@ export class WeatherComponent implements OnInit {
   // Método existente mejorado
   getCurrentLocation(): void {
     if (navigator.geolocation) {
+      // If this is a manual call (button click), reset the auto-locating flag
+      if (!this.isAutoLocating) {
+        this.isAutoLocating = false;
+      }
+      this.loading = true;
+      this.error = '';
+      this.weatherData = null;
+      this.forecastData = null;
+      
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
+          this.currentCoords = {lat, lon}; // Guardar coordenadas
           this.getWeatherByCoords(lat, lon);
         },
         (error) => {
           console.error('Error obteniendo ubicación:', error);
           this.error = 'No se pudo obtener tu ubicación';
+          this.loading = false;
+          this.isAutoLocating = false;
         }
       );
+    } else {
+      this.error = 'La geolocalización no está disponible en este navegador';
+      this.isAutoLocating = false;
     }
   }
 
@@ -106,6 +126,7 @@ export class WeatherComponent implements OnInit {
       next: (data: WeatherData) => {
         this.weatherData = data;
         this.loading = false;
+        this.isAutoLocating = false;
 
         // Si está activado el pronóstico, cargarlo por coordenadas
         if (this.showForecast) {
@@ -115,6 +136,7 @@ export class WeatherComponent implements OnInit {
       error: (err) => {
         this.error = 'Error al obtener el clima de tu ubicación';
         this.loading = false;
+        this.isAutoLocating = false;
         console.error('Error:', err);
       }
     });
@@ -144,6 +166,8 @@ export class WeatherComponent implements OnInit {
     this.showDetailedView = false;
     this.showForecast = false;
     this.selectedDay = 0;
+    this.isAutoLocating = false;
+    this.currentCoords = null; // Limpiar coordenadas guardadas
   }
 
   // NUEVOS: Métodos para controlar vistas
@@ -157,7 +181,11 @@ export class WeatherComponent implements OnInit {
     if (this.showForecast && this.weatherData && !this.forecastData) {
       // Cargar pronóstico si no está cargado
       if (this.city.trim()) {
+        // Si tenemos nombre de ciudad, usar método por ciudad
         this.loadForecast();
+      } else if (this.currentCoords) {
+        // Si tenemos coordenadas pero no ciudad, usar método por coordenadas
+        this.loadForecastByCoords(this.currentCoords.lat, this.currentCoords.lon);
       }
     }
   }
@@ -275,5 +303,13 @@ export class WeatherComponent implements OnInit {
   getCurrentHour(): string {
     const now = new Date();
     return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+  }
+
+  // NUEVO: Obtener mensaje de carga apropiado
+  getLoadingMessage(): string {
+    if (this.isAutoLocating) {
+      return 'Detectando tu ubicación...';
+    }
+    return 'Cargando información del clima...';
   }
 }

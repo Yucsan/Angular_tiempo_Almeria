@@ -34,7 +34,7 @@
     <!-- Mostrar loading -->
     <div *ngIf="loading" class="loading">
       <div class="spinner"></div>
-      <p>Cargando información del clima...</p>
+      <p>{{ getLoadingMessage() }}</p>
     </div>
 
     <!-- Mostrar datos del clima ACTUALIZADO -->
